@@ -43,7 +43,7 @@ public class GCScript : MonoBehaviour {
 				}
 			}
 		}
-		if (i < grid.GetLength(0)) {
+		if (i < grid.GetLength(0) - 1) {
 			i++;
 			StartCoroutine(CreateDelay(i, grid));
 		}
