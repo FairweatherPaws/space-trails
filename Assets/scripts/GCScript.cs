@@ -6,10 +6,12 @@ using System.IO;
 public class GCScript : MonoBehaviour {
 
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
-	public GameObject player, slab, playerPrefab, slabParent;
+	public GameObject player, slab, playerPrefab, slabParent, bewm;
 	public Material plainWhite, plainLightGrey;
 	public Camera mainCamera;
+	public Light ambience, solar;
 	private int playerStartLocation = 0;
+	private bool won = false;
 
 	// Use this for initialization
 	void Start () {
@@ -25,6 +27,10 @@ public class GCScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+		if (won) {
+			ambience.color = new Color(ambience.color.r - Time.deltaTime/2, ambience.color.g - Time.deltaTime/2, ambience.color.b - Time.deltaTime/2, 1);
+		}
+
 	}
 
 	IEnumerator CreateDelay(int i, string[,] grid) {
@@ -46,8 +52,7 @@ public class GCScript : MonoBehaviour {
 
 				for (int k = 0; k < grid[i,j].Length; k++) {
 
-					if (verticalInfo[k].Equals('1')) {
-						Debug.Log (verticalInfo[k]);
+					if (verticalInfo[k].Equals('1') || verticalInfo[k].Equals('F')) {
 						GameObject newSlab = Instantiate (slab, new Vector3(j*xShift, k*yShift, i*zShift), Quaternion.identity) as GameObject;
 						
 						if ((i+j) % 2 == 0) {
@@ -57,6 +62,9 @@ public class GCScript : MonoBehaviour {
 						}
 
 						newSlab.transform.parent = slabParent.transform;
+
+						newSlab.GetComponent<SlabScript>().makeSpecial(verticalInfo[k]);
+
 					} else if (i == 0 && verticalInfo[k].Equals('p')) {
 						playerStartLocation = j;
 						break;
@@ -76,9 +84,20 @@ public class GCScript : MonoBehaviour {
 	void instantiatePlayer() {
 		player = Instantiate(playerPrefab, new Vector3(playerStartLocation*xShift, 4, 0), Quaternion.identity) as GameObject;
 
+		player.GetComponent<Player>().getGC (this.gameObject);
+
 		mainCamera.transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 2.5f, player.transform.position.z - 4f);
 
 		mainCamera.transform.parent = player.transform;
 
+	}
+
+	public void win() {
+		if (!won) {
+			won = true;
+
+			GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
+			mainCamera.transform.parent = boom.transform;
+		}
 	}
 }

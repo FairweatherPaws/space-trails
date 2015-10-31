@@ -48,8 +48,10 @@
   <ItemGroup>
      <Compile Include="Assets\scripts\FileReader.cs" />
      <Compile Include="Assets\scripts\GCScript.cs" />
+     <Compile Include="Assets\scripts\Player.cs" />
      <Compile Include="Assets\scripts\ShipScript.cs" />
      <Compile Include="Assets\scripts\SlabScript.cs" />
+     <Compile Include="Assets\scripts\SunScript.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
