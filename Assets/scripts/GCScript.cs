@@ -16,9 +16,10 @@ public class GCScript : MonoBehaviour {
 
 		string[,] grid = FileReader.readFile("./assets/levels/level01.lvl");
 		int i = 0;
+
 		StartCoroutine(CreateDelay(i, grid));
 
-		mainCamera.transform.position = new Vector3(grid.GetLength (1)/2 * 1.618f, mainCamera.transform.position.y, mainCamera.transform.position.z);
+		// mainCamera.transform.position = new Vector3(grid.GetLength (1)/2 * 1.618f, mainCamera.transform.position.y, mainCamera.transform.position.z);
 	}
 	
 	// Update is called once per frame
@@ -58,7 +59,7 @@ public class GCScript : MonoBehaviour {
 						newSlab.transform.parent = slabParent.transform;
 					} else if (i == 0 && verticalInfo[k].Equals('p')) {
 						playerStartLocation = j;
-						continue;
+						break;
 					}
 				}
 			}
@@ -66,13 +67,18 @@ public class GCScript : MonoBehaviour {
 		if (i < grid.GetLength(0) - 1) {
 			i++;
 			StartCoroutine(CreateDelay(i, grid));
-		} else {
+		}
+		if (i == 1) {
 			StartCoroutine(CreatePlayer());
 		}
 	}
 
 	void instantiatePlayer() {
-		player = Instantiate(playerPrefab, new Vector3(playerStartLocation*xShift, 15, 0), Quaternion.identity) as GameObject;
+		player = Instantiate(playerPrefab, new Vector3(playerStartLocation*xShift, 4, 0), Quaternion.identity) as GameObject;
+
+		mainCamera.transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 2.5f, player.transform.position.z - 4f);
+
+		mainCamera.transform.parent = player.transform;
 
 	}
 }

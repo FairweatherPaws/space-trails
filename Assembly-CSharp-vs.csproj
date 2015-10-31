@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\scripts\FileReader.cs" />
      <Compile Include="Assets\scripts\GCScript.cs" />
+     <Compile Include="Assets\scripts\ShipScript.cs" />
      <Compile Include="Assets\scripts\SlabScript.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
