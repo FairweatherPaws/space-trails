@@ -6,9 +6,10 @@ using System.IO;
 public class GCScript : MonoBehaviour {
 
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
-	public GameObject slab;
+	public GameObject player, slab, playerPrefab, slabParent;
 	public Material plainWhite, plainLightGrey;
 	public Camera mainCamera;
+	private int playerStartLocation = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -30,6 +31,11 @@ public class GCScript : MonoBehaviour {
 		generateRow(i, grid);
 	}
 
+	IEnumerator CreatePlayer() {
+		yield return new WaitForSeconds(0.02f);
+		instantiatePlayer();
+	}
+
 	void generateRow(int i, string[,] grid) {
 		for (int j = 0; j < grid.GetLength (1); j++) {
 			
@@ -48,6 +54,11 @@ public class GCScript : MonoBehaviour {
 						} else {
 							newSlab.gameObject.GetComponent<Renderer>().material = plainLightGrey;
 						}
+
+						newSlab.transform.parent = slabParent.transform;
+					} else if (i == 0 && verticalInfo[k].Equals('p')) {
+						playerStartLocation = j;
+						continue;
 					}
 				}
 			}
@@ -55,6 +66,13 @@ public class GCScript : MonoBehaviour {
 		if (i < grid.GetLength(0) - 1) {
 			i++;
 			StartCoroutine(CreateDelay(i, grid));
+		} else {
+			StartCoroutine(CreatePlayer());
 		}
+	}
+
+	void instantiatePlayer() {
+		player = Instantiate(playerPrefab, new Vector3(playerStartLocation*xShift, 15, 0), Quaternion.identity) as GameObject;
+
 	}
 }
