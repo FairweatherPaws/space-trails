@@ -11,7 +11,8 @@ public class Player : MonoBehaviour {
     public float jumpForce = 5.0f;
 
     private bool jumping = false;
-    private Rigidbody playerRigidbody; 
+    private Rigidbody playerRigidbody;
+	private GameObject gc;
 
 
 	// Use this for initialization
@@ -111,6 +112,12 @@ public class Player : MonoBehaviour {
         {
             jumping = false;
         }
+		if (collision.gameObject.tag == "Finish" && gc != null) {
+			gc.GetComponent<GCScript>().win ();
+		}
     }
 
+	public void getGC(GameObject go) {
+		gc = go;
+	}
 }
