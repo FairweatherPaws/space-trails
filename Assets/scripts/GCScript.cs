@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
 
 
 public class GCScript : MonoBehaviour {
@@ -12,7 +13,7 @@ public class GCScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		int[,] grid = FileReader.readFile("./assets/levels/level01.lvl");
+		string[,] grid = FileReader.readFile("./assets/levels/level01.lvl");
 		int i = 0;
 		StartCoroutine(CreateDelay(i, grid));
 
@@ -24,22 +25,30 @@ public class GCScript : MonoBehaviour {
 	
 	}
 
-	IEnumerator CreateDelay(int i, int[,] grid) {
+	IEnumerator CreateDelay(int i, string[,] grid) {
 		yield return new WaitForSeconds(0.02f);
 		generateRow(i, grid);
 	}
 
-	void generateRow(int i, int[,] grid) {
+	void generateRow(int i, string[,] grid) {
 		for (int j = 0; j < grid.GetLength (1); j++) {
 			
-			if (grid[i,j] != 0) {
-				
-				GameObject newSlab = Instantiate (slab, new Vector3(j*xShift, 0, i*zShift), Quaternion.identity) as GameObject;
-				
-				if ((i+j) % 2 == 0) {
-					newSlab.gameObject.GetComponent<Renderer>().material = plainWhite;
-				} else {
-					newSlab.gameObject.GetComponent<Renderer>().material = plainLightGrey;
+			if (grid[i,j].Length > 0) {
+
+				string verticalInfo = grid[i,j];
+
+				for (int k = 0; k < grid[i,j].Length; k++) {
+
+					if (verticalInfo[k].Equals('1')) {
+						Debug.Log (verticalInfo[k]);
+						GameObject newSlab = Instantiate (slab, new Vector3(j*xShift, k*yShift, i*zShift), Quaternion.identity) as GameObject;
+						
+						if ((i+j) % 2 == 0) {
+							newSlab.gameObject.GetComponent<Renderer>().material = plainWhite;
+						} else {
+							newSlab.gameObject.GetComponent<Renderer>().material = plainLightGrey;
+						}
+					}
 				}
 			}
 		}

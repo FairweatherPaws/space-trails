@@ -10,7 +10,7 @@ public class FileReader : MonoBehaviour {
 	private static StreamReader reader = null;
 	private static string text = " ";
 
-	public static int[,] readFile(string s) {
+	public static string[,] readFile(string s) {
 
 		int length = 0;
 		int width = 0;
@@ -41,7 +41,7 @@ public class FileReader : MonoBehaviour {
 				break;
 			}
 		}
-		int[,] grid = new int[length,width];
+		string[,] grid = new string[length,width];
 
 		reader.Close();
 
@@ -65,6 +65,7 @@ public class FileReader : MonoBehaviour {
 					}
 
 					if (text.Substring(k-1, 1) == "," || text.Substring(k-1, 1) == ";") {
+						/*
 						int number;
 						bool success = Int32.TryParse((string)text.Substring(prevStop, 1), out number);
 						if (success) {
@@ -72,6 +73,13 @@ public class FileReader : MonoBehaviour {
 						} else {
 							grid[i,ticker] = 0;
 						}
+						*/
+						if (k - prevStop > 0) {
+							grid[i,ticker] = text.Substring(prevStop,k-prevStop);
+						} else {
+							grid[i,ticker] = "0";
+						}
+
 						prevStop = k;
 						ticker++;
 					}
