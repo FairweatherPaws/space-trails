@@ -1,0 +1,54 @@
+Mono path[0] = 'C:/Users/Petri/Documents/space-trails/Builds/0_1_first test_Data/Managed'
+Mono path[1] = 'C:/Users/Petri/Documents/space-trails/Builds/0_1_first test_Data/Mono'
+Mono config path = 'C:/Users/Petri/Documents/space-trails/Builds/0_1_first test_Data/Mono/etc'
+PlayerConnection initialized from C:/Users/Petri/Documents/space-trails/Builds/0_1_first test_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55086
+Multi-casting "[IP] 192.168.1.12 [Port] 55086 [Flags] 2 [Guid] 345694207 [EditorId] 3740076715 [Version] 1048832 [Id] WindowsPlayer(Mustikka) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [192.168.1.12:55086]
+Initialize engine version: 5.1.1f1 (2046fc06d4d8)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 4600 (ID=0x416)
+    Vendor:   Intel
+    VRAM:     128 MB
+Default GameObject Tag: Finish already registered
+ 
+(Filename: C:/buildslave/unity/build/Runtime/BaseClasses/TagManager.cpp Line: 83)
+
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
+Loading C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
+- Completed reload, in  0.400 seconds
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+Platform assembly: C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\Petri\Documents\space-trails\Builds\0_1_first test_Data\Managed\System.dll (this message is harmless)
+Setting up 1 worker threads for Enlighten.
+  Thread -> id: 140c -> priority: 1 
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 25.157688 ms
+System memory in use before: 13.4 MB.
+System memory in use after: 13.4 MB.
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 265.
+Total: 0.746063 ms (FindLiveObjects: 0.060166 ms CreateObjectMapping: 0.047779 ms MarkObjects: 0.612635 ms  DeleteObjects: 0.023712 ms)
+
+Unloading 1 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 6.113612 ms
+System memory in use before: 13.5 MB.
+System memory in use after: 13.5 MB.
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 265.
+Total: 1.022474 ms (FindLiveObjects: 0.284905 ms CreateObjectMapping: 0.046717 ms MarkObjects: 0.663599 ms  DeleteObjects: 0.023004 ms)
+
