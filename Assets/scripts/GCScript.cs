@@ -28,7 +28,7 @@ public class GCScript : MonoBehaviour {
 	void Update () {
 	
 		if (won) {
-			ambience.color = new Color(ambience.color.r - Time.deltaTime/2, ambience.color.g - Time.deltaTime/2, ambience.color.b - Time.deltaTime/2, 1);
+			solar.color = new Color(solar.color.r - Time.deltaTime/2, solar.color.g - Time.deltaTime/2, solar.color.b - Time.deltaTime/2, 1);
 		}
 
 	}
