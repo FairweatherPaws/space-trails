@@ -5,7 +5,7 @@ using System.IO;
 public class GCScript : MonoBehaviour {
 
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
-	public GameObject player, slab, playerPrefab, slabParent, bewm;
+	public GameObject player, slab, playerPrefab, slabParent, bewm, taxt;
 	public Material plainWhite, plainLightGrey;
 	public Camera mainCamera;
 	public Light ambience, solar;
@@ -19,6 +19,7 @@ public class GCScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
         
         // Enable debug controls
         if (debugControls)
@@ -35,7 +36,20 @@ public class GCScript : MonoBehaviour {
 
         }
 
-		string[,] grid = FileReader.readFile("./assets/levels/level01.lvl");
+		string path = "";
+
+#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
+
+		path = Application.dataPath + "/StreamingAssets/levels/level01.lvl";
+
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+
+		path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/level01.lvl";
+
+#endif
+
+		string[,] grid = FileReader.readFile(path);
+
 		int i = 0;
 
 		StartCoroutine(CreateDelay(i, grid));
@@ -47,7 +61,7 @@ public class GCScript : MonoBehaviour {
 	void Update () {
 	
 		if (won) {
-			ambience.color = new Color(ambience.color.r - Time.deltaTime/2, ambience.color.g - Time.deltaTime/2, ambience.color.b - Time.deltaTime/2, 1);
+			solar.color = new Color(solar.color.r - Time.deltaTime/2, solar.color.g - Time.deltaTime/2, solar.color.b - Time.deltaTime/2, 1);
 		}
 
 
@@ -171,5 +185,10 @@ public class GCScript : MonoBehaviour {
 			GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
 			mainCamera.transform.parent = boom.transform;
 		}
+	}
+
+	public void playerCrash() {
+		GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
+		mainCamera.transform.parent = boom.transform;
 	}
 }
