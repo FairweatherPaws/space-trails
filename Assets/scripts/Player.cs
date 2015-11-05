@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
 
@@ -14,6 +15,8 @@ public class Player : MonoBehaviour {
     private Rigidbody playerRigidbody;
 	private GameObject gc;
 
+    private Vector2 touchOrigin = -Vector2.one; // Storing location of screen touch
+
 
 	// Use this for initialization
 	void Start () {
@@ -22,8 +25,10 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        lateralSpeed = 0.0f;
+      
 
+        // Check if running in web player or standalone
+#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
 	    // Keyboard player controls
         // Accelerate
         if (Input.GetKey(KeyCode.W))
@@ -49,6 +54,80 @@ public class Player : MonoBehaviour {
         {
             Jump();
         }
+/*
+        try 
+        {
+            if(GameObject.Find("UpButton").GetComponent<Button>().OnPointerDown)
+            {
+                Debug.Log("UpButton");
+                Accelerate(true);
+            } else if (Input.GetButton("DownButton"))
+            {
+                Accelerate(false);
+            } else if (Input.GetButton("LeftButton"))
+            {
+                LateralMove(-1);
+            } else if (Input.GetButton("RightButton"))
+            {
+                LateralMove(1);
+            }
+        }
+        catch
+        {
+
+        }
+        */
+
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+
+    // Initial touch controls
+    // Premise: arrows to control the ship
+    // touch anywhere else to jump
+    
+
+    /* Touch controls to check differential between two touches to get the direction
+
+        // Check if input has registered more than zero touches
+        if (Input.touchCount > 0)
+        {
+            // store first touch
+            Touch firstTouch = Input.touches[0];
+
+            //Check if the phase of that touch equals Began
+            if (firstTouch.phase == TouchPhase.Began)
+            {
+                // set touchOrigin to the position of that touch
+                touchOrigin = firstTouch.position;
+                
+
+            }
+
+        // if touch phase is not Began and instead is equal to Ended and the x of touchOrigin
+            else if (firstTouch.phase == TouchPhase.Ended && touchOrigin.x >= 0)
+            {
+                // Set touchEnd to equal the position of this touch
+                Vector2 touchEnd = myTouch.position;
+                
+                // difference between the beginning and end of the touch on the x axis
+                float x = touchEnd.x - touchOrigin.x;
+
+                // diff between y axis points
+                float y = touchEnd.y - touchOrigin.y;
+
+                touchOrigin.x = -1;
+
+                // check whether x or y axis has the greater difference
+
+            }
+        }
+    */
+
+    
+    
+
+
+#endif // end of mobile platform dependent section
+
 	}
 
     void FixedUpdate()
@@ -58,12 +137,12 @@ public class Player : MonoBehaviour {
 
         // Adjust lateral velocity
         playerRigidbody.velocity = new Vector3(lateralSpeed, playerRigidbody.velocity.y, playerRigidbody.velocity.z);
-
+        lateralSpeed = 0.0f;
         // Perform jump
     }
 
     // Movement methods
-    void LateralMove(int dir)
+    public void LateralMove(int dir)
     {
         if(dir == -1)
         {
@@ -73,9 +152,10 @@ public class Player : MonoBehaviour {
         {
             lateralSpeed = 5.0f;
         }
+
     }
 
-    void Accelerate(bool forward)
+    public void Accelerate(bool forward)
     {
         if (forward)
         {
@@ -97,7 +177,7 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void Jump()
+    public void Jump()
     {
         if(!jumping)
         {

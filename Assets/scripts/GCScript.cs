@@ -2,7 +2,6 @@
 using System.Collections;
 using System.IO;
 
-
 public class GCScript : MonoBehaviour {
 
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
@@ -13,8 +12,28 @@ public class GCScript : MonoBehaviour {
 	private int playerStartLocation = 0;
 	private bool won = false;
 
+    int playerDir = 0;
+    
+    // Init debug / basic touch buttons
+    public bool debugControls = true;
+
 	// Use this for initialization
 	void Start () {
+        
+        // Enable debug controls
+        if (debugControls)
+        {
+            try
+            {
+                foreach (Transform child in GameObject.Find("PlayerControls").transform)
+                {
+                    child.gameObject.SetActive(true);
+                }
+            }
+            catch
+            { }
+
+        }
 
 		string[,] grid = FileReader.readFile("./assets/levels/level01.lvl");
 		int i = 0;
@@ -31,7 +50,60 @@ public class GCScript : MonoBehaviour {
 			solar.color = new Color(solar.color.r - Time.deltaTime/2, solar.color.g - Time.deltaTime/2, solar.color.b - Time.deltaTime/2, 1);
 		}
 
+
+        // Debug/touch controls
+        if(playerDir > 0 && playerDir < 5)
+        {
+            
+            if (playerDir == 1)
+            {
+                player.GetComponent<Player>().Accelerate(true);
+            }
+            else if (playerDir == 2)
+            {
+                player.GetComponent<Player>().LateralMove(-1);
+            }
+            else if (playerDir == 3)
+            {
+                player.GetComponent<Player>().LateralMove(1);
+            }
+            else if (playerDir == 4)
+            {
+                player.GetComponent<Player>().Accelerate(false);
+            }
+        }
+
 	}
+
+    public void HardReset()
+    {
+        Application.LoadLevel(Application.loadedLevel);
+    }
+
+    // button controls for movement, reference player object
+    public void ButtonControls(int i)
+    {
+        try
+        {
+            if (i > 0 && i < 5)
+            {
+                playerDir = i;
+            }
+            else
+            {
+                playerDir = -1;
+            }
+
+            if (i == 5)
+            {
+                player.GetComponent<Player>().Jump();
+            }
+        }
+        catch
+        {
+
+        }
+    }
 
 	IEnumerator CreateDelay(int i, string[,] grid) {
 		yield return new WaitForSeconds(0.02f);
