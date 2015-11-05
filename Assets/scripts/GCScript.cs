@@ -5,7 +5,7 @@ using System.IO;
 public class GCScript : MonoBehaviour {
 
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
-	public GameObject player, slab, playerPrefab, slabParent, bewm;
+	public GameObject player, slab, playerPrefab, slabParent, bewm, taxt;
 	public Material plainWhite, plainLightGrey;
 	public Camera mainCamera;
 	public Light ambience, solar;
@@ -19,6 +19,8 @@ public class GCScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+		taxt.GetComponent<Renderer>().enabled = true;
         
         // Enable debug controls
         if (debugControls)
@@ -171,5 +173,10 @@ public class GCScript : MonoBehaviour {
 			GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
 			mainCamera.transform.parent = boom.transform;
 		}
+	}
+
+	public void playerCrash() {
+		GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
+		mainCamera.transform.parent = boom.transform;
 	}
 }

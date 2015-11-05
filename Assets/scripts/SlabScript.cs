@@ -38,7 +38,7 @@ public class SlabScript : MonoBehaviour {
 
 	public void makeSpecial(char s) {
 		if (s.Equals('F')) {
-			this.gameObject.tag = "Finish";
+			this.gameObject.tag = "FinishLine";
 		}
 	}
 

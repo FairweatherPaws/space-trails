@@ -139,6 +139,7 @@ public class Player : MonoBehaviour {
         playerRigidbody.velocity = new Vector3(lateralSpeed, playerRigidbody.velocity.y, playerRigidbody.velocity.z);
         lateralSpeed = 0.0f;
         // Perform jump
+		Debug.Log (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f)));
     }
 
     // Movement methods
@@ -183,7 +184,7 @@ public class Player : MonoBehaviour {
         {
             jumping = true;
             playerRigidbody.velocity = new Vector3(0, jumpForce, playerRigidbody.velocity.z);
-        }
+		}
     }
     
     void OnCollisionEnter(Collision collision)
@@ -192,10 +193,19 @@ public class Player : MonoBehaviour {
         {
             jumping = false;
         }
-		if (collision.gameObject.tag == "Finish" && gc != null) {
+		if (collision.gameObject.tag == "FinishLine" && gc != null) {
 			gc.GetComponent<GCScript>().win ();
 		}
+		if (collision.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 10) {
+			gc.GetComponent<GCScript>().playerCrash();
+		}
     }
+
+	void OnTriggerEnter(Collider col) {
+		if (col.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 10) {
+			gc.GetComponent<GCScript>().playerCrash();
+		}
+	}
 
 	public void getGC(GameObject go) {
 		gc = go;
