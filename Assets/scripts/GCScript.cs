@@ -20,7 +20,6 @@ public class GCScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		taxt.GetComponent<Renderer>().enabled = true;
         
         // Enable debug controls
         if (debugControls)
@@ -37,7 +36,20 @@ public class GCScript : MonoBehaviour {
 
         }
 
-		string[,] grid = FileReader.readFile("./assets/levels/level01.lvl");
+		string path = "";
+
+#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
+
+		path = Application.dataPath + "/StreamingAssets/levels/level01.lvl";
+
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+
+		path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/level01.lvl";
+
+#endif
+
+		string[,] grid = FileReader.readFile(path);
+
 		int i = 0;
 
 		StartCoroutine(CreateDelay(i, grid));
