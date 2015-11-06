@@ -8,7 +8,7 @@ public class GCScript : MonoBehaviour {
 
 
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
-	public GameObject player, slab, playerPrefab, slabParent, bewm, taxt;
+	public GameObject player, slab, playerPrefab, slabParent, bewm, tunnel;
 	public Material plainWhite, plainLightGrey;
 	public Camera mainCamera;
 	public Light ambience, solar;
@@ -186,6 +186,18 @@ public class GCScript : MonoBehaviour {
 						playerStartLocation = j;
 						playerPresent = true;
 						break;
+					} else if (verticalInfo[k].Equals ('T')) {
+						GameObject newTunnel = Instantiate(tunnel, new Vector3(j*xShift, k*yShift-0.2f, i*zShift-1), Quaternion.identity) as GameObject;
+
+						newTunnel.gameObject.GetComponent<Renderer>().material = plainWhite;
+
+						newTunnel.transform.parent = slabParent.transform;
+
+						deployable[j] += 2;
+
+						k++;
+
+						continue;
 					}
 				}
 			}
