@@ -94,4 +94,29 @@ public class FileReader : MonoBehaviour {
 
 	}
 
+	public static string getLine(string s, int n) {
+
+		sourceFile = new FileInfo(s);
+		reader = sourceFile.OpenText ();
+		string levelone = "";
+
+		for (int i = 0; i < n; i++) {
+
+			text = reader.ReadLine ();
+			if (i == 0) {
+
+				levelone = text;
+
+			}
+		}
+
+		reader.Close();
+
+		if (text != null) {
+			return text;
+		}
+
+		return levelone;
+
+	}
 }

@@ -4,13 +4,17 @@ using System.IO;
 
 public class GCScript : MonoBehaviour {
 
+	// FUTURE ME: check what the hell is wrong with the post-last level spawning, kthx
+
+
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
 	public GameObject player, slab, playerPrefab, slabParent, bewm, taxt;
 	public Material plainWhite, plainLightGrey;
 	public Camera mainCamera;
 	public Light ambience, solar;
 	private int playerStartLocation = 0;
-	private bool won = false;
+	private bool playerDied = false;
+	private int currentLevel;
 
     int playerDir = 0;
     
@@ -19,7 +23,11 @@ public class GCScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		if (PlayerPrefs.HasKey("currentLevel")) {
+			currentLevel = PlayerPrefs.GetInt ("currentLevel"); // saves the current level to long-term cache, could also implement e.g. upgrades or max level reached with this
+		} else {
+			currentLevel = 1;
+		}
         
         // Enable debug controls
         if (debugControls)
@@ -35,16 +43,19 @@ public class GCScript : MonoBehaviour {
             { }
 
         }
-
+		
 		string path = "";
-
+		string levelName = "";
+		
 #if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
-
-		path = Application.dataPath + "/StreamingAssets/levels/level01.lvl";
+		
+		levelName = FileReader.getLine(Application.dataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+		Debug.Log ("INIT " + levelName);
+		path = Application.dataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
 
 #elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
 
-		path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/level01.lvl";
+		path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
 
 #endif
 
@@ -60,7 +71,7 @@ public class GCScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
-		if (won) {
+		if (playerDied) {
 			solar.color = new Color(solar.color.r - Time.deltaTime/2, solar.color.g - Time.deltaTime/2, solar.color.b - Time.deltaTime/2, 1);
 		}
 
@@ -129,7 +140,19 @@ public class GCScript : MonoBehaviour {
 		instantiatePlayer();
 	}
 
+	IEnumerator AdvanceLevel() {
+
+		yield return new WaitForSeconds(2f);
+		destroyAllTheThings();
+		yield return new WaitForSeconds(1f);
+		gotoNextLevel();
+	}
+
 	void generateRow(int i, string[,] grid) {
+
+		bool playerPresent = false;
+		int[] deployable = new int[grid.GetLength (1)];
+
 		for (int j = 0; j < grid.GetLength (1); j++) {
 			
 			if (grid[i,j].Length > 0) {
@@ -151,19 +174,40 @@ public class GCScript : MonoBehaviour {
 
 						newSlab.GetComponent<SlabScript>().makeSpecial(verticalInfo[k]);
 
+						deployable[j]++;
+
 					} else if (i == 0 && verticalInfo[k].Equals('p')) {
 						playerStartLocation = j;
+						playerPresent = true;
 						break;
 					}
 				}
 			}
 		}
+
+		if (!playerPresent && i == 0) {
+
+			for (int j = 0; j < deployable.GetLength(0); j++) {
+
+				if (deployable[j] > 0) {
+
+					playerStartLocation = j;
+					playerPresent = true;
+					break;
+
+				}
+
+			}
+		}
+
 		if (i < grid.GetLength(0) - 1) {
 			i++;
 			StartCoroutine(CreateDelay(i, grid));
 		}
-		if (i == 1) {
+		if (playerPresent) {
 			StartCoroutine(CreatePlayer());
+		} else {
+			// Handle fucked up level design here
 		}
 	}
 
@@ -178,17 +222,76 @@ public class GCScript : MonoBehaviour {
 
 	}
 
-	public void win() {
-		if (!won) {
-			won = true;
+	void destroyAllTheThings() {
 
-			GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
-			mainCamera.transform.parent = boom.transform;
+		mainCamera.transform.parent = null;
+
+		GameObject[] components = GameObject.FindGameObjectsWithTag("LevelComponent");
+		GameObject[] sfx = GameObject.FindGameObjectsWithTag("SFX");
+
+		foreach(GameObject unit in components) {
+
+			DestroyImmediate(unit);
+
 		}
+
+		foreach(GameObject effect in sfx) {
+
+			DestroyImmediate (effect);
+
+		}
+
+		DestroyImmediate (player);
+
+		playerDied = false;
+	}
+
+	void gotoNextLevel() {
+
+		currentLevel++;
+
+		string path = "";
+		string levelName = "";
+		
+		#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
+
+		levelName = FileReader.getLine(Application.dataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+		Debug.Log (levelName);
+		path = Application.dataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
+		
+		#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+		
+		path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
+		
+		#endif
+		
+		string[,] grid = FileReader.readFile(path);
+		
+		int i = 0;
+
+		solar.color = new Color(0.8f, 0.2f, 0.2f, 1);
+		
+		StartCoroutine(CreateDelay(i, grid));
+
+	}
+
+	public void win() {
+
+		Debug.Log("Level won");
+
+		StartCoroutine(AdvanceLevel());
 	}
 
 	public void playerCrash() {
+
+		Debug.Log("Respawn called");
+
+		playerDied = true;
+
 		GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
 		mainCamera.transform.parent = boom.transform;
+
+		currentLevel--;
+		StartCoroutine(AdvanceLevel()); // hacky as fuck, beware.
 	}
 }

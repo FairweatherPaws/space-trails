@@ -139,7 +139,7 @@ public class Player : MonoBehaviour {
         playerRigidbody.velocity = new Vector3(lateralSpeed, playerRigidbody.velocity.y, playerRigidbody.velocity.z);
         lateralSpeed = 0.0f;
         // Perform jump
-		Debug.Log (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f)));
+		//Debug.Log (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f)));
     }
 
     // Movement methods
@@ -196,7 +196,7 @@ public class Player : MonoBehaviour {
 		if (collision.gameObject.tag == "FinishLine" && gc != null) {
 			gc.GetComponent<GCScript>().win ();
 		}
-		if (collision.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 10) {
+		if (collision.gameObject.tag == "Boomer" && gc != null && playerRigidbody.velocity.z > 10) {
 			gc.GetComponent<GCScript>().playerCrash();
 		}
     }
