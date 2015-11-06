@@ -194,13 +194,13 @@ public class Player : MonoBehaviour {
             jumping = false;
         }
 
-		if (collision.gameObject.tag == "Boomer" && gc != null && playerRigidbody.velocity.z > 10) {
+		if (collision.gameObject.tag == "Boomer" && gc != null && playerRigidbody.velocity.z > 5) {
 			gc.GetComponent<GCScript>().playerCrash();
 		}
     }
 
 	void OnTriggerEnter(Collider col) {
-		if (col.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 10) {
+		if (col.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 5) {
 			gc.GetComponent<GCScript>().playerCrash();
 		}
 

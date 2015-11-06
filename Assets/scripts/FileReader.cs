@@ -119,4 +119,30 @@ public class FileReader : MonoBehaviour {
 		return levelone;
 
 	}
+
+	public static int getRowCount(string s) {
+
+		sourceFile = new FileInfo(s);
+		reader = sourceFile.OpenText ();
+		int count = 0;
+		
+		while (true) {
+			
+			text = reader.ReadLine ();
+			if (text != null) {
+				
+				count++;
+				
+			} else {
+
+				break;
+
+			}
+		}
+
+		reader.Close ();
+		
+		return count;
+
+	}
 }

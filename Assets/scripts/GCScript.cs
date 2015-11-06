@@ -14,7 +14,7 @@ public class GCScript : MonoBehaviour {
 	public Light ambience, solar;
 	private int playerStartLocation = 0;
 	private bool playerDied, won;
-	private int currentLevel;
+	private int currentLevel, maxLevel, levelCount;
 
     int playerDir = 0;
     
@@ -33,6 +33,8 @@ public class GCScript : MonoBehaviour {
 			currentLevel = 1;
 		}
         
+		levelCount = FileReader.getRowCount(Application.dataPath + "/StreamingAssets/levels/index.idx");
+
         // Enable debug controls
         if (debugControls)
         {
@@ -254,6 +256,16 @@ public class GCScript : MonoBehaviour {
 	void gotoNextLevel() {
 
 		currentLevel++;
+
+		if (currentLevel > levelCount) {
+
+			currentLevel = 1;
+
+		}
+
+		if (maxLevel < currentLevel) {
+			maxLevel = currentLevel;
+		}
 
 		string path = "";
 		string levelName = "";
