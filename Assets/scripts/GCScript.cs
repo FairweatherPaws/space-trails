@@ -13,7 +13,7 @@ public class GCScript : MonoBehaviour {
 	public Camera mainCamera;
 	public Light ambience, solar;
 	private int playerStartLocation = 0;
-	private bool playerDied = false;
+	private bool playerDied, won;
 	private int currentLevel;
 
     int playerDir = 0;
@@ -23,6 +23,10 @@ public class GCScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+		playerDied = false;
+		won = false;
+
 		if (PlayerPrefs.HasKey("currentLevel")) {
 			currentLevel = PlayerPrefs.GetInt ("currentLevel"); // saves the current level to long-term cache, could also implement e.g. upgrades or max level reached with this
 		} else {
@@ -244,6 +248,7 @@ public class GCScript : MonoBehaviour {
 		DestroyImmediate (player);
 
 		playerDied = false;
+		won = false;
 	}
 
 	void gotoNextLevel() {
@@ -277,21 +282,26 @@ public class GCScript : MonoBehaviour {
 
 	public void win() {
 
-		Debug.Log("Level won");
+		if (!won) {
+			won = true;
 
-		StartCoroutine(AdvanceLevel());
+			Debug.Log("Level won");
+
+			StartCoroutine(AdvanceLevel());
+		}
 	}
 
 	public void playerCrash() {
+		if (!playerDied) {
+			Debug.Log("Respawn called");
 
-		Debug.Log("Respawn called");
+			playerDied = true;
 
-		playerDied = true;
+			GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
+			mainCamera.transform.parent = boom.transform;
 
-		GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
-		mainCamera.transform.parent = boom.transform;
-
-		currentLevel--;
-		StartCoroutine(AdvanceLevel()); // hacky as fuck, beware.
+			currentLevel--;
+			StartCoroutine(AdvanceLevel()); // hacky as fuck, beware.
+		}
 	}
 }

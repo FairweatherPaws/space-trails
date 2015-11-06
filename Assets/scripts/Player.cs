@@ -193,9 +193,7 @@ public class Player : MonoBehaviour {
         {
             jumping = false;
         }
-		if (collision.gameObject.tag == "FinishLine" && gc != null) {
-			gc.GetComponent<GCScript>().win ();
-		}
+
 		if (collision.gameObject.tag == "Boomer" && gc != null && playerRigidbody.velocity.z > 10) {
 			gc.GetComponent<GCScript>().playerCrash();
 		}
@@ -205,6 +203,10 @@ public class Player : MonoBehaviour {
 		if (col.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 10) {
 			gc.GetComponent<GCScript>().playerCrash();
 		}
+
+		if (col.gameObject.tag == "FinishLine" && gc != null) {
+			gc.GetComponent<GCScript>().win ();
+		} 
 	}
 
 	public void getGC(GameObject go) {

@@ -35,9 +35,9 @@ public class SlabScript : MonoBehaviour {
 	}
 
 	public void makeSpecial(char s) {
-		Debug.Log ("Called! " + s);
+
 		if (s.Equals('F')) {
-			this.gameObject.tag = "FinishLine";
+			gameObject.transform.GetChild(1).gameObject.GetComponent<BoxCollider>().enabled = true;
 		}
 	}
 
