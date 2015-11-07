@@ -145,14 +145,7 @@ public class Player : MonoBehaviour {
     // Movement methods
     public void LateralMove(int dir)
     {
-        if(dir == -1)
-        {
-            lateralSpeed = -5.0f;
-        }
-        else if (dir == 1)
-        {
-            lateralSpeed = 5.0f;
-        }
+		lateralSpeed = dir * 5f;
 
     }
 

@@ -5,7 +5,7 @@ using System.IO;
 public class GCScript : MonoBehaviour {
 
 	// FUTURE ME: check what the hell is wrong with the post-last level spawning, kthx
-
+	// PlayerControl spawn
 
 	public static float xShift = 1.618f, yShift = 0.4f, zShift = 2.618f;
 	public GameObject player, slab, playerPrefab, slabParent, bewm, tunnel;
@@ -15,6 +15,7 @@ public class GCScript : MonoBehaviour {
 	private int playerStartLocation = 0;
 	private bool playerDied, won;
 	private int currentLevel, maxLevel, levelCount;
+	private Vector2 touchStart, touchEnd;
 
     int playerDir = 0;
     
@@ -53,17 +54,19 @@ public class GCScript : MonoBehaviour {
 		string path = "";
 		string levelName = "";
 		
-#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
-		
 		levelName = FileReader.getLine(Application.dataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
-		Debug.Log ("INIT " + levelName);
+
 		path = Application.dataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
 
-#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
+		if (Application.platform == RuntimePlatform.Android) {
 
-		path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
 
-#endif
+			//levelName = FileReader.getLine(Application.dataPath + "!/assets/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+			levelName = FileReader.getLine("jar:file://"+Application.streamingAssetsPath + "/levels/index.idx", currentLevel);
+			//path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
+			path = "jar:file://"+Application.streamingAssetsPath + "/levels/" + levelName + ".lvl";
+
+		}
 
 		string[,] grid = FileReader.readFile(path);
 
@@ -103,6 +106,47 @@ public class GCScript : MonoBehaviour {
                 player.GetComponent<Player>().Accelerate(false);
             }
         }
+
+		if (Input.touchCount > 0) { 
+			if (Input.GetTouch (0).phase == TouchPhase.Began) {
+				touchStart = Input.GetTouch(0).position;
+			}
+			Vector2 currentLocation = Input.GetTouch(0).position;
+
+			float distanceToDot = Mathf.Sqrt(Mathf.Pow(currentLocation.x-touchStart.x,2)+Mathf.Pow(currentLocation.y-touchStart.y,2));
+
+			if (distanceToDot > Screen.width / 10 && distanceToDot < Screen.width / 6) {
+				if (currentLocation.y > touchStart.y) { // up
+					if (Mathf.Abs (currentLocation.x - touchStart.x) < Mathf.Abs (currentLocation.y - touchStart.y)) {
+						player.GetComponent<Player>().Accelerate(true);
+					} else {
+						if (currentLocation.x > touchStart.x) {
+							player.GetComponent<Player>().LateralMove(1);
+						} else {
+							player.GetComponent<Player>().LateralMove(-1);
+						}
+					}
+				} else if (currentLocation.y <= touchStart.y) { // lower
+					if (Mathf.Abs (currentLocation.x - touchStart.x)*Mathf.Sqrt (3) < Mathf.Abs (currentLocation.y - touchStart.y)) {
+						player.GetComponent<Player>().Accelerate(false);
+					} else {
+						if (currentLocation.x > touchStart.x) {
+							player.GetComponent<Player>().LateralMove(1);
+						} else {
+							player.GetComponent<Player>().LateralMove(-1);
+						}
+					}
+				} 
+			}
+ 
+			
+			if (Input.GetTouch(0).phase == TouchPhase.Ended) {
+				touchEnd = Input.GetTouch(0).position;
+				if (Mathf.Sqrt (Mathf.Pow (touchEnd.x-touchStart.x,2)+Mathf.Pow (touchEnd.y-touchStart.y,2)) < Screen.width / 10) {
+					player.GetComponent<Player>().Jump();
+				}
+			}
+		}
 
 	}
 
@@ -258,8 +302,9 @@ public class GCScript : MonoBehaviour {
 			DestroyImmediate (effect);
 
 		}
-
-		DestroyImmediate (player);
+		if (player != null) {
+			DestroyImmediate (player);
+		}
 
 		playerDied = false;
 		won = false;
@@ -282,23 +327,23 @@ public class GCScript : MonoBehaviour {
 		string path = "";
 		string levelName = "";
 		
-		#if UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_EDITOR
-
 		levelName = FileReader.getLine(Application.dataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
-		Debug.Log (levelName);
+		
 		path = Application.dataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
 		
-		#elif UNITY_IOS || UNITY_ANDROID || UNITY_WP8 || UNITY_IPHONE
-		
-		path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
-		
-		#endif
+		if (Application.platform == RuntimePlatform.Android) {
+			
+			levelName = FileReader.getLine(Application.dataPath + "!/assets/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+			path = "jar:file://" + Application.persistentDataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
+			
+		}
+
 		
 		string[,] grid = FileReader.readFile(path);
 		
 		int i = 0;
 
-		solar.color = new Color(0.8f, 0.2f, 0.2f, 1);
+		solar.color = new Color(1f, 0.8f, 0.5f, 1);
 		
 		StartCoroutine(CreateDelay(i, grid));
 
@@ -323,6 +368,8 @@ public class GCScript : MonoBehaviour {
 
 			GameObject boom = Instantiate(bewm, player.transform.position, Quaternion.identity) as GameObject;
 			mainCamera.transform.parent = boom.transform;
+
+			DestroyImmediate (player);
 
 			currentLevel--;
 			StartCoroutine(AdvanceLevel()); // hacky as fuck, beware.
