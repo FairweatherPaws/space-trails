@@ -16,6 +16,7 @@ public class GCScript : MonoBehaviour {
 	private bool playerDied, won;
 	private int currentLevel, maxLevel, levelCount;
 	private Vector2 touchStart, touchEnd;
+	private string levelName, path;
 
     int playerDir = 0;
     
@@ -34,7 +35,7 @@ public class GCScript : MonoBehaviour {
 			currentLevel = 1;
 		}
         
-		levelCount = FileReader.getRowCount(Application.dataPath + "/StreamingAssets/levels/index.idx");
+		levelCount = FileReader.getRowCount(Application.persistentDataPath + "/StreamingAssets/levels/index.idx");
 
         // Enable debug controls
         if (debugControls)
@@ -51,20 +52,17 @@ public class GCScript : MonoBehaviour {
 
         }
 		
-		string path = "";
-		string levelName = "";
+		path = "";
+		levelName = "";
 		
-		levelName = FileReader.getLine(Application.dataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+		levelName = FileReader.getLine(Application.persistentDataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
 
-		path = Application.dataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
+		path = Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
 
 		if (Application.platform == RuntimePlatform.Android) {
 
-
-			//levelName = FileReader.getLine(Application.dataPath + "!/assets/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
-			levelName = FileReader.getLine("jar:file://"+Application.streamingAssetsPath + "/levels/index.idx", currentLevel);
-			//path = "jar:file://" + Application.dataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
-			path = "jar:file://"+Application.streamingAssetsPath + "/levels/" + levelName + ".lvl";
+			levelName = FileReader.getLine(Application.streamingAssetsPath + "/levels/" + "index.idx", currentLevel);
+			path = Application.streamingAssetsPath + "/levels/" + levelName + ".lvl";
 
 		}
 
@@ -79,6 +77,10 @@ public class GCScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if (Input.GetKeyDown(KeyCode.Escape)) { Application.Quit(); }
+		
+
 	
 		if (playerDied) {
 			solar.color = new Color(solar.color.r - Time.deltaTime/2, solar.color.g - Time.deltaTime/2, solar.color.b - Time.deltaTime/2, 1);
@@ -115,7 +117,7 @@ public class GCScript : MonoBehaviour {
 
 			float distanceToDot = Mathf.Sqrt(Mathf.Pow(currentLocation.x-touchStart.x,2)+Mathf.Pow(currentLocation.y-touchStart.y,2));
 
-			if (distanceToDot > Screen.width / 10 && distanceToDot < Screen.width / 6) {
+			if (distanceToDot > Screen.width / 20) {
 				if (currentLocation.y > touchStart.y) { // up
 					if (Mathf.Abs (currentLocation.x - touchStart.x) < Mathf.Abs (currentLocation.y - touchStart.y)) {
 						player.GetComponent<Player>().Accelerate(true);
@@ -127,7 +129,7 @@ public class GCScript : MonoBehaviour {
 						}
 					}
 				} else if (currentLocation.y <= touchStart.y) { // lower
-					if (Mathf.Abs (currentLocation.x - touchStart.x)*Mathf.Sqrt (3) < Mathf.Abs (currentLocation.y - touchStart.y)) {
+					if (Mathf.Abs (currentLocation.x - touchStart.x) < Mathf.Abs (currentLocation.y - touchStart.y)) {
 						player.GetComponent<Player>().Accelerate(false);
 					} else {
 						if (currentLocation.x > touchStart.x) {
