@@ -29,13 +29,6 @@ public class GCScript : MonoBehaviour {
 		playerDied = false;
 		won = false;
 
-		if (PlayerPrefs.HasKey("currentLevel")) {
-			currentLevel = PlayerPrefs.GetInt ("currentLevel"); // saves the current level to long-term cache, could also implement e.g. upgrades or max level reached with this
-		} else {
-			currentLevel = 1;
-		}
-        
-		levelCount = FileReader.getRowCount(Application.persistentDataPath + "/StreamingAssets/levels/index.idx");
 
         // Enable debug controls
         if (debugControls)
@@ -51,22 +44,77 @@ public class GCScript : MonoBehaviour {
             { }
 
         }
+
+
+
+		if (PlayerPrefs.HasKey("currentLevel")) {
+			currentLevel = PlayerPrefs.GetInt ("currentLevel"); // saves the current level to long-term cache, could also implement e.g. upgrades or max level reached with this
+		} else {
+			currentLevel = 1;
+		}
+
+
+
+        try
+        {
+
+            WWW localFile = GET("file:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx");
+            Debug.Log("Level index file: " + localFile.text);
+            levelCount = localFile.text.Split('\n').Length - 1; // compensating for final newline
+            Debug.Log("level count: " + levelCount);
+
+        }
+        catch
+        {
+            Debug.Log("Unable to load index file for levelCount");
+        }
+
+
 		
 		path = "";
 		levelName = "";
+
+        // Aim: Load level file regardless of platform
+        try
+        {
+            levelName = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx").text.Split('\n')[currentLevel];
+            Debug.Log("Level name: " + levelName);
+            // Gets the level file as a string 
+            levelName = levelName.Replace("\\n", "");
+            levelName = levelName.Trim();
+            path = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl").text;  // level01.lvl").text;
+            GridMaker.CreateGridFromString(path);
+            // Should implement a check to see if the file is in the index but can't be found in reality
+
+        }
+
+        catch
+        {
+            Debug.Log("Error loading level");
+        }
+        // old 
+        /*
+              levelName = FileReader.getLine(Application.persistentDataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+              levelName = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx").text.Split('\n')[currentLevel];
+              Debug.Log("Current level name: " + levelName);
+          } 
+          catch
+          {
+              Debug.Log("Unable to load file for levelName");
+          }
+
 		
-		levelName = FileReader.getLine(Application.persistentDataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+          path = Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
 
-		path = Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
+          if (Application.platform == RuntimePlatform.Android) {
 
-		if (Application.platform == RuntimePlatform.Android) {
+              levelName = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx").text.Split('\n')[currentLevel];
+              path = Application.streamingAssetsPath + "/levels/" + levelName + ".lvl";
 
-			levelName = FileReader.getLine(Application.streamingAssetsPath + "/levels/" + "index.idx", currentLevel);
-			path = Application.streamingAssetsPath + "/levels/" + levelName + ".lvl";
+          }
+                  */
 
-		}
-
-		string[,] grid = FileReader.readFile(path);
+        string[,] grid = FileReader.readFile(path);
 
 		int i = 0;
 
@@ -377,4 +425,29 @@ public class GCScript : MonoBehaviour {
 			StartCoroutine(AdvanceLevel()); // hacky as fuck, beware.
 		}
 	}
+
+
+    // General helper functions
+    // Getting a file using the WWW class with built loop to wait when loading
+    public WWW GET(string url)
+    {
+        WWW www = new WWW(url);
+
+        StartCoroutine(WaitForWWW(www));
+        // wait until loaded
+        while (!www.isDone) { }
+
+        if (www.error == null || www.error == "")
+        {
+            Debug.Log(www);
+        }
+
+        return www;
+
+    }
+
+    IEnumerator WaitForWWW(WWW www)
+    {
+        yield return www;
+    }
 }

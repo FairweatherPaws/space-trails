@@ -24,9 +24,9 @@ public class FileReader : MonoBehaviour {
 
 				for (int i = 1; i <= text.Length; i++) {
 
-					if (text.Substring(i-1, 1) == ",") {
+					if (text.Substring(i - 1, 1) == ",") {
 						ticker++;
-					} else if (text.Substring(i-1,1) == ";") {
+					} else if (text.Substring(i - 1,1) == ";") {
 						length++;
 						ticker++;
 					}
