@@ -46,7 +46,6 @@ public class GCScript : MonoBehaviour {
         }
 
 
-
 		if (PlayerPrefs.HasKey("currentLevel")) {
 			currentLevel = PlayerPrefs.GetInt ("currentLevel"); // saves the current level to long-term cache, could also implement e.g. upgrades or max level reached with this
 		} else {
@@ -54,10 +53,9 @@ public class GCScript : MonoBehaviour {
 		}
 
 
-
         try
         {
-
+            // Best to use WWW class for all file retrieval
             WWW localFile = GET("file:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx");
             Debug.Log("Level index file: " + localFile.text);
             levelCount = localFile.text.Split('\n').Length - 1; // compensating for final newline
@@ -73,7 +71,7 @@ public class GCScript : MonoBehaviour {
 		
 		path = "";
 		levelName = "";
-
+        string[,] grid = null;
         // Aim: Load level file regardless of platform
         try
         {
@@ -82,8 +80,9 @@ public class GCScript : MonoBehaviour {
             // Gets the level file as a string 
             levelName = levelName.Replace("\\n", "");
             levelName = levelName.Trim();
-            path = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl").text;  // level01.lvl").text;
-            GridMaker.CreateGridFromString(path);
+            path = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl").text;
+            grid = GridMaker.CreateGridFromString(path);
+
             // Should implement a check to see if the file is in the index but can't be found in reality
 
         }
@@ -92,29 +91,6 @@ public class GCScript : MonoBehaviour {
         {
             Debug.Log("Error loading level");
         }
-        // old 
-        /*
-              levelName = FileReader.getLine(Application.persistentDataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
-              levelName = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx").text.Split('\n')[currentLevel];
-              Debug.Log("Current level name: " + levelName);
-          } 
-          catch
-          {
-              Debug.Log("Unable to load file for levelName");
-          }
-
-		
-          path = Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
-
-          if (Application.platform == RuntimePlatform.Android) {
-
-              levelName = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx").text.Split('\n')[currentLevel];
-              path = Application.streamingAssetsPath + "/levels/" + levelName + ".lvl";
-
-          }
-                  */
-
-        string[,] grid = FileReader.readFile(path);
 
 		int i = 0;
 

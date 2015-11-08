@@ -6,7 +6,8 @@ using System;
 
 public class GridMaker : MonoBehaviour {
 
-    public static void CreateGridFromString(string s)
+    // Takes a string of a level file and returns a formatted 2d grid
+    public static string[,] CreateGridFromString(string s)
     {
         // FileReader isn't very commented but I reckon the idea is to:
         // Find the length, i.e. the amount of rows
@@ -46,6 +47,8 @@ public class GridMaker : MonoBehaviour {
         Debug.Log("len, wid: " + length + " " + width);
         // Initialise grid
         string[,] grid = new string[length, width];
+
+        Debug.Log("grid " + grid);
 
         // Fill grid
         for (int i = 0; i < length; i++)
@@ -87,11 +90,13 @@ public class GridMaker : MonoBehaviour {
 
                     prevStop = k;
                     ticker++;
+ 
                 }
 
             }
-           
+       
         }
-        Debug.Log(grid);
+
+        return grid;
     }
 }
