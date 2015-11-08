@@ -23,26 +23,33 @@ public class GridMaker : MonoBehaviour {
         Debug.Log(stringList);
         Debug.Log("len " + length);
 
-        if (stringList != null)
+        try
         {
-
-            for (int l = 0; l < length; l++)
+            if (stringList != null)
             {
-                int ticker = 0;
 
-                for (int c = 0; c < stringList[l].Length; c++)
+                for (int l = 0; l < length; l++)
                 {
-                    if (stringList[l].Substring(c, 1) == "," || stringList[l].Substring(c, 1) == ";")
+                    int ticker = 0;
+
+                    for (int c = 0; c < stringList[l].Length; c++)
                     {
-                        ticker++;
+                        if (stringList[l].Substring(c, 1) == "," || stringList[l].Substring(c, 1) == ";")
+                        {
+                            ticker++;
+                        }
                     }
-                }
-                if (ticker > width)
-                {
-                    width = ticker;
-                }
+                    if (ticker > width)
+                    {
+                        width = ticker;
+                    }
 
+                }
             }
+        } 
+        catch
+        {
+            Debug.Log("Error in reading level data from level file");
         }
         Debug.Log("len, wid: " + length + " " + width);
         // Initialise grid
@@ -51,50 +58,55 @@ public class GridMaker : MonoBehaviour {
         Debug.Log("grid " + grid);
 
         // Fill grid
-        for (int i = 0; i < length; i++)
+        try
         {
-
-            int ticker = 0;
-            int prevStop = 0;
-
-            for (int k = 1; k <= stringList[i].Length; k++)
+            for (int i = 0; i < length; i++)
             {
 
-                if (ticker == width)
-                {
-                    continue;
-                }
+                int ticker = 0;
+                int prevStop = 0;
 
-                if (stringList[i].Substring(k - 1, 1) == "," || stringList[i].Substring(k - 1, 1) == ";")
+                for (int k = 1; k <= stringList[i].Length; k++)
                 {
 
-                    int number;
-                    bool success = Int32.TryParse((string)stringList[i].Substring(prevStop, 1), out number);
-                    if (success)
+                    if (ticker == width)
                     {
-                        grid[i, ticker] = number.ToString();
-                    }
-                    else
-                    {
-                        grid[i, ticker] = "0";
+                        continue;
                     }
 
-                    if (k - prevStop > 0)
+                    if (stringList[i].Substring(k - 1, 1) == "," || stringList[i].Substring(k - 1, 1) == ";")
                     {
-                        grid[i, ticker] = stringList[i].Substring(prevStop, k - prevStop);
-                    }
-                    else
-                    {
-                        grid[i, ticker] = "0";
-                    }
 
-                    prevStop = k;
-                    ticker++;
- 
+                        int number;
+                        bool success = Int32.TryParse((string)stringList[i].Substring(prevStop, 1), out number);
+                        if (success)
+                        {
+                            grid[i, ticker] = number.ToString();
+                        }
+                        else
+                        {
+                            grid[i, ticker] = "0";
+                        }
+
+                        if (k - prevStop > 0)
+                        {
+                            grid[i, ticker] = stringList[i].Substring(prevStop, k - prevStop);
+                        }
+                        else
+                        {
+                            grid[i, ticker] = "0";
+                        }
+
+                        prevStop = k;
+                        ticker++;
+
+                    }
                 }
-
             }
-       
+        }
+        catch
+        {
+            Debug.Log("Error in reading level data from level file");
         }
 
         return grid;
