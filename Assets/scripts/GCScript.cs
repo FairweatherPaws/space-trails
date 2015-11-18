@@ -16,16 +16,10 @@ public class GCScript : MonoBehaviour {
 	private bool playerDied, won;
 	private int currentLevel, maxLevel, levelCount;
 	private Vector2 touchStart, touchEnd;
-	private string levelName, fileData;
+	private string levelName, path;
 
     int playerDir = 0;
     
-    // Set paths depending on platform at start
-    string indexFilePath = "";
-    string levelFilePath = "";
-
-
-
     // Init debug / basic touch buttons
     public bool debugControls = true;
 
@@ -34,7 +28,7 @@ public class GCScript : MonoBehaviour {
 
 		playerDied = false;
 		won = false;
-        WWW localFile;
+
 
         // Enable debug controls
         if (debugControls)
@@ -51,63 +45,57 @@ public class GCScript : MonoBehaviour {
 
         }
 
+
 		if (PlayerPrefs.HasKey("currentLevel")) {
 			currentLevel = PlayerPrefs.GetInt ("currentLevel"); // saves the current level to long-term cache, could also implement e.g. upgrades or max level reached with this
 		} else {
-			currentLevel = 0;
+			currentLevel = 1;
 		}
 
-
-        // Defaults
-        indexFilePath = ("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx");
-        levelFilePath = ("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/");
-
-        // This works
-#if UNITY_ANDROID
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            levelFilePath = (Application.streamingAssetsPath + "/levels/");
-            indexFilePath = (Application.streamingAssetsPath + "/levels/index.idx");
-        }
-#endif
 
         try
         {
             // Best to use WWW class for all file retrieval
-            localFile = GET(indexFilePath);
+            WWW localFile = GET("file:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx");
             Debug.Log("Level index file: " + localFile.text);
             levelCount = localFile.text.Split('\n').Length - 1; // compensating for final newline
-            Debug.Log("Level count: " + levelCount);
+            Debug.Log("level count: " + levelCount);
+
         }
         catch
         {
-            Debug.Log("Unable to load index file for levelCount at " + indexFilePath);
+            Debug.Log("Unable to load index file for levelCount");
         }
 
-        fileData = "";
+
+		
+		path = "";
 		levelName = "";
         string[,] grid = null;
-
+        // Aim: Load level file regardless of platform
         try
         {
-            levelName = GET(indexFilePath).text.Split('\n')[currentLevel];
-        }
-        catch
-        {
+            levelName = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/index.idx").text.Split('\n')[currentLevel];
             Debug.Log("Level name: " + levelName);
             // Gets the level file as a string 
-
-        }
             levelName = levelName.Replace("\\n", "");
             levelName = levelName.Trim();
-            fileData = GET(levelFilePath + levelName + ".lvl").text;
-          
-            grid = GridMaker.CreateGridFromString(fileData);
+            path = GET("File:///" + Application.persistentDataPath + "/StreamingAssets/levels/" + levelName + ".lvl").text;
+            grid = GridMaker.CreateGridFromString(path);
 
             // Should implement a check to see if the file is in the index but can't be found in reality
 
+        }
+
+        catch
+        {
+            Debug.Log("Error loading level");
+        }
+
 		int i = 0;
+
 		StartCoroutine(CreateDelay(i, grid));
+
 		// mainCamera.transform.position = new Vector3(grid.GetLength (1)/2 * 1.618f, mainCamera.transform.position.y, mainCamera.transform.position.z);
 	}
 	
@@ -115,14 +103,18 @@ public class GCScript : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetKeyDown(KeyCode.Escape)) { Application.Quit(); }
+		
+
 	
 		if (playerDied) {
 			solar.color = new Color(solar.color.r - Time.deltaTime/2, solar.color.g - Time.deltaTime/2, solar.color.b - Time.deltaTime/2, 1);
 		}
 
+
         // Debug/touch controls
         if(playerDir > 0 && playerDir < 5)
-        {            
+        {
+            
             if (playerDir == 1)
             {
                 player.GetComponent<Player>().Accelerate(true);
@@ -350,7 +342,7 @@ public class GCScript : MonoBehaviour {
 
 		if (currentLevel > levelCount) {
 
-			currentLevel = 0;
+			currentLevel = 1;
 
 		}
 
@@ -358,23 +350,22 @@ public class GCScript : MonoBehaviour {
 			maxLevel = currentLevel;
 		}
 
-		string levelName = "no level";
+		string path = "";
+		string levelName = "";
+		
+		levelName = FileReader.getLine(Application.dataPath + "/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+		
+		path = Application.dataPath + "/StreamingAssets/levels/" + levelName + ".lvl";
+		
+		if (Application.platform == RuntimePlatform.Android) {
+			
+			levelName = FileReader.getLine(Application.dataPath + "!/assets/StreamingAssets/levels/index.idx", currentLevel); // this gets the next level from the index; add appropriate address for other platforms
+			path = "jar:file://" + Application.persistentDataPath + "!/assets/StreamingAssets/levels/" + levelName + ".lvl";
+			
+		}
 
-
-        try
-        {
-            levelName = GET(indexFilePath).text.Split('\n')[currentLevel];
-        }
-        catch
-        {
-
-        }
-        Debug.Log("Changing level to level number " + currentLevel + ", " + levelName);
-
-        levelName = levelName.Replace("\\n", "");
-        levelName = levelName.Trim();
-        fileData = GET(levelFilePath + levelName + ".lvl").text;
-		string[,] grid = GridMaker.CreateGridFromString(fileData);
+		
+		string[,] grid = FileReader.readFile(path);
 		
 		int i = 0;
 
@@ -388,7 +379,9 @@ public class GCScript : MonoBehaviour {
 
 		if (!won) {
 			won = true;
+
 			Debug.Log("Level won");
+
 			StartCoroutine(AdvanceLevel());
 		}
 	}
@@ -422,11 +415,7 @@ public class GCScript : MonoBehaviour {
 
         if (www.error == null || www.error == "")
         {
-            Debug.Log("WWW load error: " + www);
-        }
-        if(string.IsNullOrEmpty(www.text))
-        {
-            Debug.Log("WWW load error: " + www);
+            Debug.Log(www);
         }
 
         return www;
