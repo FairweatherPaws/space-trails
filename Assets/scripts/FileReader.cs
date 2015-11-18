@@ -24,9 +24,9 @@ public class FileReader : MonoBehaviour {
 
 				for (int i = 1; i <= text.Length; i++) {
 
-					if (text.Substring(i-1, 1) == ",") {
+					if (text.Substring(i - 1, 1) == ",") {
 						ticker++;
-					} else if (text.Substring(i-1,1) == ";") {
+					} else if (text.Substring(i - 1,1) == ";") {
 						length++;
 						ticker++;
 					}
@@ -94,4 +94,55 @@ public class FileReader : MonoBehaviour {
 
 	}
 
+	public static string getLine(string s, int n) {
+
+		sourceFile = new FileInfo(s);
+		reader = sourceFile.OpenText ();
+		string levelone = "";
+
+		for (int i = 0; i < n; i++) {
+
+			text = reader.ReadLine ();
+			if (i == 0) {
+
+				levelone = text;
+
+			}
+		}
+
+		reader.Close();
+
+		if (text != null) {
+			return text;
+		}
+
+		return levelone;
+
+	}
+
+	public static int getRowCount(string s) {
+
+		sourceFile = new FileInfo(s);
+		reader = sourceFile.OpenText ();
+		int count = 0;
+		
+		while (true) {
+			
+			text = reader.ReadLine ();
+			if (text != null) {
+				
+				count++;
+				
+			} else {
+
+				break;
+
+			}
+		}
+
+		reader.Close ();
+		
+		return count;
+
+	}
 }

@@ -6,7 +6,6 @@ public class SlabScript : MonoBehaviour {
 	private bool initialBounce = true;
 	private float bounceTime;
 	private float myX, myY, myZ;
-	private bool winningTile;
 
 	// Use this for initialization
 	void Start () {
@@ -14,7 +13,6 @@ public class SlabScript : MonoBehaviour {
 		myY = this.transform.position.y;
 		myZ = this.transform.position.z;
 		bounceTime = 2f;
-		winningTile = false;
 
 	}
 	
@@ -37,8 +35,9 @@ public class SlabScript : MonoBehaviour {
 	}
 
 	public void makeSpecial(char s) {
+
 		if (s.Equals('F')) {
-			this.gameObject.tag = "FinishLine";
+			gameObject.transform.GetChild(1).gameObject.GetComponent<BoxCollider>().enabled = true;
 		}
 	}
 

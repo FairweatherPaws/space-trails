@@ -139,20 +139,13 @@ public class Player : MonoBehaviour {
         playerRigidbody.velocity = new Vector3(lateralSpeed, playerRigidbody.velocity.y, playerRigidbody.velocity.z);
         lateralSpeed = 0.0f;
         // Perform jump
-		Debug.Log (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f)));
+		//Debug.Log (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f)));
     }
 
     // Movement methods
     public void LateralMove(int dir)
     {
-        if(dir == -1)
-        {
-            lateralSpeed = -5.0f;
-        }
-        else if (dir == 1)
-        {
-            lateralSpeed = 5.0f;
-        }
+		lateralSpeed = dir * 5f;
 
     }
 
@@ -193,18 +186,20 @@ public class Player : MonoBehaviour {
         {
             jumping = false;
         }
-		if (collision.gameObject.tag == "FinishLine" && gc != null) {
-			gc.GetComponent<GCScript>().win ();
-		}
-		if (collision.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 10) {
+
+		if (collision.gameObject.tag == "Boomer" && gc != null && playerRigidbody.velocity.z > 5) {
 			gc.GetComponent<GCScript>().playerCrash();
 		}
     }
 
 	void OnTriggerEnter(Collider col) {
-		if (col.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 10) {
+		if (col.gameObject.tag == "Boomer" && gc != null && (Mathf.Sqrt(Mathf.Pow(playerRigidbody.velocity.z,2f) + Mathf.Pow(playerRigidbody.velocity.x,2f) + Mathf.Pow(playerRigidbody.velocity.y,2f))) > 5) {
 			gc.GetComponent<GCScript>().playerCrash();
 		}
+
+		if (col.gameObject.tag == "FinishLine" && gc != null) {
+			gc.GetComponent<GCScript>().win ();
+		} 
 	}
 
 	public void getGC(GameObject go) {
