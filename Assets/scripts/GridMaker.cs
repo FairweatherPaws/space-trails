@@ -23,33 +23,26 @@ public class GridMaker : MonoBehaviour {
         Debug.Log(stringList);
         Debug.Log("len " + length);
 
-        try
+        if (stringList != null)
         {
-            if (stringList != null)
+
+            for (int l = 0; l < length; l++)
             {
+                int ticker = 0;
 
-                for (int l = 0; l < length; l++)
+                for (int c = 0; c < stringList[l].Length; c++)
                 {
-                    int ticker = 0;
-
-                    for (int c = 0; c < stringList[l].Length; c++)
+                    if (stringList[l].Substring(c, 1) == "," || stringList[l].Substring(c, 1) == ";")
                     {
-                        if (stringList[l].Substring(c, 1) == "," || stringList[l].Substring(c, 1) == ";")
-                        {
-                            ticker++;
-                        }
+                        ticker++;
                     }
-                    if (ticker > width)
-                    {
-                        width = ticker;
-                    }
-
                 }
+                if (ticker > width)
+                {
+                    width = ticker;
+                }
+
             }
-        } 
-        catch
-        {
-            Debug.Log("Error in reading level data from level file");
         }
         Debug.Log("len, wid: " + length + " " + width);
         // Initialise grid
@@ -58,55 +51,50 @@ public class GridMaker : MonoBehaviour {
         Debug.Log("grid " + grid);
 
         // Fill grid
-        try
+        for (int i = 0; i < length; i++)
         {
-            for (int i = 0; i < length; i++)
+
+            int ticker = 0;
+            int prevStop = 0;
+
+            for (int k = 1; k <= stringList[i].Length; k++)
             {
 
-                int ticker = 0;
-                int prevStop = 0;
+                if (ticker == width)
+                {
+                    continue;
+                }
 
-                for (int k = 1; k <= stringList[i].Length; k++)
+                if (stringList[i].Substring(k - 1, 1) == "," || stringList[i].Substring(k - 1, 1) == ";")
                 {
 
-                    if (ticker == width)
+                    int number;
+                    bool success = Int32.TryParse((string)stringList[i].Substring(prevStop, 1), out number);
+                    if (success)
                     {
-                        continue;
+                        grid[i, ticker] = number.ToString();
+                    }
+                    else
+                    {
+                        grid[i, ticker] = "0";
                     }
 
-                    if (stringList[i].Substring(k - 1, 1) == "," || stringList[i].Substring(k - 1, 1) == ";")
+                    if (k - prevStop > 0)
                     {
-
-                        int number;
-                        bool success = Int32.TryParse((string)stringList[i].Substring(prevStop, 1), out number);
-                        if (success)
-                        {
-                            grid[i, ticker] = number.ToString();
-                        }
-                        else
-                        {
-                            grid[i, ticker] = "0";
-                        }
-
-                        if (k - prevStop > 0)
-                        {
-                            grid[i, ticker] = stringList[i].Substring(prevStop, k - prevStop);
-                        }
-                        else
-                        {
-                            grid[i, ticker] = "0";
-                        }
-
-                        prevStop = k;
-                        ticker++;
-
+                        grid[i, ticker] = stringList[i].Substring(prevStop, k - prevStop);
                     }
+                    else
+                    {
+                        grid[i, ticker] = "0";
+                    }
+
+                    prevStop = k;
+                    ticker++;
+ 
                 }
+
             }
-        }
-        catch
-        {
-            Debug.Log("Error in reading level data from level file");
+       
         }
 
         return grid;
